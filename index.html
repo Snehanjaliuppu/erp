@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Marks Calculator</title>
+  <style>
+    :root{ --bg:#f6f8fb; --card:#ffffff; --accent:#2563eb; --muted:#6b7280; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial;background:var(--bg);color:#111}
+    header{background:linear-gradient(90deg,#eef2ff, #eef8ff);padding:22px 20px;border-bottom:1px solid rgba(16,24,40,0.04)}
+    .container{max-width:980px;margin:24px auto;padding:0 16px}
+    .title-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    h1{font-size:24px;margin:0}
+    nav{margin-top:14px}
+    .menu{display:flex;gap:12px}
+    .menu button{background:none;border:0;padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer}
+    .menu button.active{background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(37,99,235,0.14)}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(9,30,66,0.04);margin-top:20px}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* simple grid for pages */
+    .page{display:none}
+    .page.active{display:block}
+
+    /* Subjects list */
+    .subjects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .subject{padding:12px;border-radius:10px;border:1px solid rgba(16,24,40,0.04)}
+    .subject h3{margin:4px 0}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* Form */
+    form .row{display:flex;gap:12px;margin-bottom:10px}
+    input[type=number],select,input[type=text]{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(16,24,40,0.06)}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+
+    @media (max-width:520px){
+      .title-row{flex-direction:column;align-items:flex-start}
+      .menu{flex-wrap:wrap}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="title-row">
+        <div>
+          <h1>Student Marks Calculator</h1>
+          <div class="muted">Manage subjects • enter marks • calculate grades</div>
+        </div>
+        <div class="muted">Built for quick classroom use</div>
+      </div>
+
+      <nav>
+        <div class="menu" role="navigation" aria-label="Main menu">
+          <button data-page="home" class="active">Home</button>
+          <button data-page="create">Create</button>
+          <button data-page="grade">Grade</button>
+          <button data-page="subjects">Subjects</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Home -->
+    <section id="home" class="card page active">
+      <h2>Welcome</h2>
+      <p class="muted">Use the menu to switch between pages. This is a single-file demo — no server required. The Subjects page lists common subject abbreviations with their full forms (per request).</p>
+      <div style="margin-top:12px">
+        <strong>Quick actions</strong>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" data-action="goto" data-target="create">Create new student</button>
+          <button class="btn" data-action="goto" data-target="grade">Calculate grade</button>
+          <button class="btn" data-action="goto" data-target="subjects">View subjects</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Create student / enter marks -->
+    <section id="create" class="card page">
+      <h2>Create / Enter Marks</h2>
+      <form id="marksForm">
+        <div class="row">
+          <input type="text" id="studentName" placeholder="Student name" required />
+          <select id="subjectSelect">
+            <option value="DBMS">DBMS — Database Management System</option>
+            <option value="PNS">PNS — Probability and Statistics</option>
+            <option value="ADM">ADM — Application of Data Mining</option>
+            <option value="MATH">MATH — Mathematics</option>
+          </select>
+        </div>
+        <div class="row">
+          <input type="number" id="marks1" placeholder="Internal (out of 30)" min="0" max="30" required />
+          <input type="number" id="marks2" placeholder="External (out of 70)" min="0" max="70" required />
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn" type="submit">Save & Calculate</button>
+          <div id="saveMsg" class="muted" style="margin-left:8px"></div>
+        </div>
+      </form>
+
+      <div id="studentCard" style="margin-top:16px"></div>
+    </section>
+
+    <!-- Grade page -->
+    <section id="grade" class="card page">
+      <h2>Grade Calculator</h2>
+      <p class="muted">Enter total marks and get grade and percentage.
+      </p>
+      <form id="gradeForm">
+        <div class="row">
+          <input type="number" id="totalObtained" placeholder="Marks obtained (0 - 100)" min="0" max="100" required />
+          <input type="number" id="totalMax" placeholder="Maximum marks (default 100)" min="1" value="100" required />
+        </div>
+        <button class="btn" type="submit">Get Grade</button>
+      </form>
+      <div id="gradeResult" style="margin-top:12px"></div>
+    </section>
+
+    <!-- Subjects list -->
+    <section id="subjects" class="card page">
+      <h2>Subjects</h2>
+      <p class="muted">Abbreviations shown with full forms.</p>
+      <div class="subjects-grid" style="margin-top:12px">
+        <div class="subject">
+          <h3>DBMS</h3>
+          <div class="small">Database Management System</div>
+        </div>
+        <div class="subject">
+          <h3>PNS</h3>
+          <div class="small">Probability and Statistics</div>
+        </div>
+        <div class="subject">
+          <h3>ADM</h3>
+          <div class="small">Application of Data Mining</div>
+        </div>
+        <div class="subject">
+          <h3>MATH</h3>
+          <div class="small">Mathematics</div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      &copy; Student Marks Calculator — demo
+    </footer>
+
+  </main>
+
+  <script>
+    // simple page routing
+    const menuButtons = document.querySelectorAll('.menu button');
+    const pages = document.querySelectorAll('.page');
+    function showPage(id){
+      pages.forEach(p=>p.id===id? p.classList.add('active') : p.classList.remove('active'))
+      menuButtons.forEach(b=> b.dataset.page===id ? b.classList.add('active') : b.classList.remove('active'))
+      window.scrollTo({top:0,behavior:'smooth'})
+    }
+    menuButtons.forEach(btn=>btn.addEventListener('click',()=>showPage(btn.dataset.page)))
+
+    // quick action buttons
+    document.querySelectorAll('[data-action="goto"]').forEach(b=>b.addEventListener('click',e=>{
+      const t = e.currentTarget.dataset.target; showPage(t);
+    }))
+
+    // marks form submit
+    const marksForm = document.getElementById('marksForm');
+    const studentCard = document.getElementById('studentCard');
+    marksForm.addEventListener('submit',e=>{
+      e.preventDefault();
+      const name = document.getElementById('studentName').value.trim();
+      const sub = document.getElementById('subjectSelect').value;
+      const m1 = Number(document.getElementById('marks1').value) || 0;
+      const m2 = Number(document.getElementById('marks2').value) || 0;
+      const total = m1 + m2; // internal + external
+      const percent = ((total)/100)*100; // assuming total out of 100
+      const grade = percent >= 85 ? 'A' : percent >= 70 ? 'B' : percent >= 50 ? 'C' : 'F';
+      studentCard.innerHTML = `<div style="padding:12px;border-radius:10px;border:1px solid rgba(16,24,40,0.04)"><strong>${escapeHtml(name)}</strong> — <span class="small">${sub}</span><div style="margin-top:6px">Total: ${total}/100 — ${percent.toFixed(2)}% — Grade: <strong>${grade}</strong></div></div>`;
+      document.getElementById('saveMsg').textContent = 'Saved (local demo)';
+      setTimeout(()=>document.getElementById('saveMsg').textContent='',1600);
+    })
+
+    // grade form
+    document.getElementById('gradeForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      const obt = Number(document.getElementById('totalObtained').value);
+      const mx = Number(document.getElementById('totalMax').value);
+      if(mx<=0){document.getElementById('gradeResult').textContent='Max must be > 0';return}
+      const pct = (obt/mx)*100;
+      let g = '';
+      if(pct>=85) g='A'; else if(pct>=70) g='B'; else if(pct>=50) g='C'; else g='F';
+      document.getElementById('gradeResult').innerHTML = `<strong>${pct.toFixed(2)}%</strong> — Grade: <strong>${g}</strong>`;
+    })
+
+    // small helper to prevent injection when creating HTML from user input
+    function escapeHtml(unsafe){
+      return unsafe.replace(/[&<>"']/g, function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#039;"}[m]});
+    }
+  </script>
+</body>
+</html>
